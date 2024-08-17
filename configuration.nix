@@ -47,10 +47,13 @@
   environment.systemPackages = with pkgs; [
     git
     neovim
+    htop
   ];
 
   # Enable the OpenSSH daemon
   services.openssh.enable = true;
+
+  services.qemuGuest.enable = true;
 
   system.stateVersion = "24.05";
 }

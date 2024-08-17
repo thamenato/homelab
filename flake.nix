@@ -6,9 +6,11 @@
     # disko
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+    # For accessing `deploy-rs`'s utility Nix functions
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
-  outputs = { self, nixpkgs, disko, ... }@inputs:
+  outputs = { self, nixpkgs, disko, deploy-rs, ... }@inputs:
     let
       nodes = [
         "unraid-nixos"
@@ -34,5 +36,16 @@
               };
             })
           nodes);
+
+      deploy.nodes.unraid-nixos = {
+        hostname = "10.0.10.208";
+        profiles.system = {
+          user = "root";
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.unraid-nixos;
+        };
+      };
+
+      # This is highly advised, and will prevent many possible mistakes
+      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 }
