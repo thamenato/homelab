@@ -12,11 +12,23 @@
 
   outputs = { self, nixpkgs, disko, deploy-rs, ... }@inputs:
     let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs {
+        inherit system;
+        config.allowUnfree = true;
+      };
       nodes = [
         "unraid-nixos"
       ];
     in
     {
+      devShells.${system}.default = pkgs.mkShell {
+        buildInputs = [ pkgs.deploy-rs ];
+        packages = with pkgs; [
+          nixpkgs-fmt
+        ];
+      };
+
       nixosConfigurations = builtins.listToAttrs
         (map
           (name:
@@ -26,7 +38,7 @@
                 specialArgs = {
                   meta = { hostname = name; };
                 };
-                system = "x86_64-linux";
+                inherit system;
                 modules = [
                   disko.nixosModules.disko
                   ./vms/unraid-nixos/hardware-configuration.nix
@@ -42,6 +54,7 @@
         profiles.system = {
           user = "root";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.unraid-nixos;
+          interactiveSudo = true;
         };
       };
 

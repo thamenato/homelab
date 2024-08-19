@@ -2,19 +2,30 @@
 
 Attempting to actually get the homelab up and running!
 
-nixanywhere
+## Installing NixOS
 
-First time run:
+This command is supposed to run once to set up the remote
+host, anytime it runs against a machine, it'll format the
+disks.
 
 ```shell
 nix run github:nix-community/nixos-anywhere -- \
-    --flake '.#unraid-nixos' thamenato@10.0.10.208
+    --flake '.#unraid-nixos' <user>@<ip>
 ```
 
-Follow up:
+## Updating hosts remotely
+
+### nixos-rebuild
+
 ```shell
-nixos-rebuild switch -s --use-remote-sudo --fast \
+nixos-rebuild switch --use-remote-sudo --fast \
     --flake .#unraid-nixos \
-    --target-host thamenato@10.0.10.208 \
-    --build-host thamenato@10.0.10.208
+    --target-host <user>@<ip> \
+    --build-host <user>@<ip>
+```
+
+### deploy-rs
+
+```shell
+deploy .#unraid-nixos
 ```

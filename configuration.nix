@@ -4,16 +4,22 @@
   imports = [ ];
 
   nix = {
-    package = pkgs.nixFlakes;
-    extraOptions = ''
-      experimental-features = nix-command flakes
-    '';
+    package = pkgs.nixVersions.nix_2_23;
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      allowed-users = [ "thamenato" ];
+      trusted-users = [ "thamenato" ];
+    };
   };
+
+  # set zsh as default shell
+  environment.shells = with pkgs; [ zsh ];
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
-
 
   networking.hostName = meta.hostname; # Define your hostname.
   # Pick only one of the below networking options.
@@ -39,9 +45,14 @@
   users.users.thamenato = {
     isNormalUser = true;
     description = "Thales Menato";
-    extraGroups = [ "wheel" ];
+    extraGroups = [ "wheel" "sudoer" ];
     packages = with pkgs; [ ];
+
+    # created using mkpasswd
     hashedPassword = "$6$U/Gk7/zD4uUWVGzJ$CJ6ZKPLpBCUUVzmwsRlv2csJbIuChM8pf1mlRIdazdQBvQyCS3uukcKwH0t20WqJKmDOdQB2N5.qc5TYbKwn01";
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGnbZosCtInrhlAvKxwwDITIRqwGcCsCuR8E2FA4dwKh thamenato@kassogtha"
+    ];
   };
 
   environment.systemPackages = with pkgs; [
