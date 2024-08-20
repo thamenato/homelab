@@ -45,7 +45,7 @@
   users.users.thamenato = {
     isNormalUser = true;
     description = "Thales Menato";
-    extraGroups = [ "wheel" "sudoer" ];
+    extraGroups = [ "wheel" ];
     packages = with pkgs; [ ];
 
     # created using mkpasswd
@@ -55,6 +55,7 @@
     ];
   };
 
+  security.sudo.wheelNeedsPassword = false;
   environment.systemPackages = with pkgs; [
     git
     neovim
@@ -62,7 +63,13 @@
   ];
 
   # Enable the OpenSSH daemon
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      KbdInteractiveAuthentication = false;
+    };
+  };
 
   services.qemuGuest.enable = true;
 
