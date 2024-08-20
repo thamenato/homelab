@@ -1,7 +1,9 @@
 { config, lib, pkgs, meta, ... }:
 
 {
-  imports = [ ];
+  imports = [
+    ./services/blocky.nix
+  ];
 
   nix = {
     package = pkgs.nixVersions.nix_2_23;
@@ -55,12 +57,23 @@
     ];
   };
 
-  security.sudo.wheelNeedsPassword = false;
   environment.systemPackages = with pkgs; [
     git
     neovim
     htop
+    blocky
   ];
+
+  # allow user in group wheel to auth w/o passwd
+  # this setting fixes nix-rebuild / deploy-rs issues
+  # when building a new generation
+  security.sudo.wheelNeedsPassword = false;
+
+  # firewall (iptables)
+  networking.firewall = {
+    allowedTCPPorts = [ 53 ];
+    allowedUDPPorts = [ 53 ];
+  };
 
   # Enable the OpenSSH daemon
   services.openssh = {
