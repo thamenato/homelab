@@ -1,10 +1,6 @@
 { config, lib, pkgs, meta, ... }:
 
 {
-  imports = [
-    ./services/blocky.nix
-  ];
-
   nix = {
     package = pkgs.nixVersions.nix_2_23;
     settings = {
@@ -61,19 +57,12 @@
     git
     neovim
     htop
-    blocky
   ];
 
   # allow user in group wheel to auth w/o passwd
   # this setting fixes nix-rebuild / deploy-rs issues
   # when building a new generation
   security.sudo.wheelNeedsPassword = false;
-
-  # firewall (iptables)
-  networking.firewall = {
-    allowedTCPPorts = [ 53 ];
-    allowedUDPPorts = [ 53 ];
-  };
 
   # Enable the OpenSSH daemon
   services.openssh = {
@@ -85,6 +74,41 @@
   };
 
   services.qemuGuest.enable = true;
+
+  fileSystems."/mnt/data" = {
+    device = "data";
+    fsType = "9p";
+    options = [
+      "rw"
+      "relatime"
+      "access=client"
+      "trans=virtio"
+    ];
+  };
+
+  # hardware = {
+  #   opengl.enable = true;
+
+  #   nvidia = {
+  #     # Modesetting is required.
+  #     modesetting.enable = true;
+  #     # Use the NVidia open source kernel module (not to be confused with the
+  #     # independent third-party "nouveau" open source driver).
+  #     open = false;
+  #     # Enable the Nvidia settings menu,
+  #     # accessible via `nvidia-settings`.
+  #     nvidiaSettings = true;
+  #     # Optionally, you may need to select the appropriate driver version for your specific GPU.
+  #     package = config.boot.kernelPackages.nvidiaPackages.stable;
+  #   };
+  # };
+
+  # kernel version
+  boot.kernelPackages = pkgs.linuxPackages_6_10;
+  system.autoUpgrade = {
+    enable = true;
+    allowReboot = false;
+  };
 
   system.stateVersion = "24.05";
 }

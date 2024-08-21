@@ -18,7 +18,7 @@
         config.allowUnfree = true;
       };
       nodes = [
-        "unraid-nixos"
+        "unraid-k3s-01"
       ];
     in
     {
@@ -41,19 +41,17 @@
                 inherit system;
                 modules = [
                   disko.nixosModules.disko
-                  ./vms/unraid-nixos/hardware-configuration.nix
-                  ./vms/unraid-nixos/disko-config.nix
-                  ./configuration.nix
+                  ./vms/${name}
                 ];
               };
             })
           nodes);
 
-      deploy.nodes.unraid-nixos = {
-        hostname = "10.0.10.208";
+      deploy.nodes.unraid-k3s-01 = {
+        hostname = "10.0.10.97";
         profiles.system = {
           user = "root";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.unraid-nixos;
+          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.unraid-k3s-01;
         };
       };
 

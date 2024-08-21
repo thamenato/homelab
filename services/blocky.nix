@@ -22,6 +22,7 @@
         };
         mapping = {
           "unraid-nixos.lan" = "10.0.10.208";
+          "unraid.lan" = "10.0.10.2";
         };
         # zone = '''';
       };
@@ -42,5 +43,11 @@
         };
       };
     };
+  };
+
+  # firewall (iptables)
+  networking.firewall = {
+    allowedTCPPorts = [ 53 ];
+    allowedUDPPorts = [ 53 ];
   };
 }
