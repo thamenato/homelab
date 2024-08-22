@@ -5,8 +5,8 @@
     package = pkgs.nixVersions.nix_2_23;
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
-      allowed-users = [ "thamenato" ];
-      trusted-users = [ "thamenato" ];
+      allowed-users = [ meta.user ];
+      trusted-users = [ meta.user ];
     };
   };
 
@@ -40,9 +40,8 @@
   };
   console.keyMap = "us-acentos";
 
-  users.users.thamenato = {
+  users.users.${meta.user} = {
     isNormalUser = true;
-    description = "Thales Menato";
     extraGroups = [ "wheel" ];
     packages = with pkgs; [ ];
 
