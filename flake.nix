@@ -17,8 +17,28 @@
         inherit system;
         config.allowUnfree = true;
       };
+
+      default_user = "thamenato";
+
       nodes = [
-        "unraid-k3s-01"
+        {
+          hostname = "unraid-node-01";
+          user = default_user;
+          ip = "10.0.10.233";
+          modules = [ ./vms/unraid-nodes ];
+        }
+        {
+          hostname = "unraid-node-02";
+          user = default_user;
+          ip = "10.0.10.111";
+          modules = [ ./vms/unraid-nodes ];
+        }
+        {
+          hostname = "unraid-node-03";
+          user = default_user;
+          ip = "10.0.10.168";
+          modules = [ ./vms/unraid-nodes ];
+        }
       ];
     in
     {
@@ -31,29 +51,38 @@
 
       nixosConfigurations = builtins.listToAttrs
         (map
-          (name:
+          (host:
             {
-              name = name;
+              name = host.hostname;
               value = nixpkgs.lib.nixosSystem {
-                specialArgs = {
-                  meta = { hostname = name; };
-                };
                 inherit system;
+
+                specialArgs = {
+                  meta = host;
+                };
+
                 modules = [
                   disko.nixosModules.disko
-                  ./vms/${name}
-                ];
+                ] ++ host.modules;
               };
             })
           nodes);
 
-      deploy.nodes.unraid-k3s-01 = {
-        hostname = "10.0.10.97";
-        profiles.system = {
-          user = "root";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.unraid-k3s-01;
-        };
-      };
+      deploy.nodes = builtins.listToAttrs
+        (map
+          (host:
+            {
+              name = host.hostname;
+              value = {
+                hostname = host.ip;
+                sshOpts = [ "-i" "~/.ssh/rlyeh" ];
+                profiles.system = {
+                  user = "root";
+                  path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${host.hostname};
+                };
+              };
+            })
+          nodes);
 
       # This is highly advised, and will prevent many possible mistakes
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
