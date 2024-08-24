@@ -18,6 +18,7 @@
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+  boot.growPartition = true;
 
   networking.hostName = meta.hostname; # Define your hostname.
   # Pick only one of the below networking options.
@@ -75,15 +76,23 @@
 
   services.qemuGuest.enable = true;
 
-  fileSystems."/mnt/data" = {
-    device = "data";
-    fsType = "9p";
-    options = [
-      "rw"
-      "relatime"
-      "access=client"
-      "trans=virtio"
-    ];
+  fileSystems = {
+    "/" = lib.mkDefault {
+      device = "/dev/disk/by-partlabel/disk-vdisk1-root";
+      fsType = "ext4";
+      autoResize = true;
+    };
+
+    "/mnt/data" = {
+      device = "data";
+      fsType = "9p";
+      options = [
+        "rw"
+        "relatime"
+        "access=client"
+        "trans=virtio"
+      ];
+    };
   };
 
   # hardware = {
