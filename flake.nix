@@ -46,6 +46,7 @@
         buildInputs = [ pkgs.deploy-rs ];
         packages = with pkgs; [
           nixpkgs-fmt
+          k3s
         ];
       };
 
