@@ -2,7 +2,11 @@
   imports = [
     ../base
     ./configuration.nix
-    # services
-    # ../../services/blocky.nix
+    ../../services
   ];
+
+  homelab.services = {
+    blocky.enable = true;
+    k3s.enable = false;
+  };
 }
