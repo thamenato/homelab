@@ -8,15 +8,12 @@
     {
       enable = true;
       role = "server";
-      # extraFlags = toString ([
-      #   "--write-kubeconfig-mode \"0644\""
-      #   "--cluster-init"
-      #   "--disable servicelb"
-      #   "--disable traefik"
-      #   "--disable local-storage"
-      # ] ++ (if meta.hostname == "homelab-0" then [ ] else [
-      #   "--server https://homelab-0:6443"
-      # ]));
+      extraFlags = toString
+        ([
+          "--disable servicelb"
+          "--disable traefik"
+          "--disable local-storage"
+        ]));
       tokenFile = /var/lib/rancher/k3s/server/token;
       clusterInit = isInit;
       serverAddr = (if isInit then "" else "https://${initHostname}:6443");

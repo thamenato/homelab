@@ -22,22 +22,10 @@
 
       nodes = [
         {
-          hostname = "unraid-node-01";
+          hostname = "unraid-nixos-01";
           user = default_user;
-          ip = "10.0.10.233";
-          modules = [ ./vms/unraid-nodes ];
-        }
-        {
-          hostname = "unraid-node-02";
-          user = default_user;
-          ip = "10.0.10.111";
-          modules = [ ./vms/unraid-nodes ];
-        }
-        {
-          hostname = "unraid-node-03";
-          user = default_user;
-          ip = "10.0.10.168";
-          modules = [ ./vms/unraid-nodes ];
+          ip = "10.0.10.3";
+          modules = [ ./nixos/vms/unraid-nixos-01 ];
         }
       ];
     in
@@ -46,7 +34,6 @@
         buildInputs = [ pkgs.deploy-rs ];
         packages = with pkgs; [
           nixpkgs-fmt
-          k3s
         ];
       };
 
