@@ -42,7 +42,7 @@ in
         };
 
         blocking = {
-          blackLists = {
+          denylists = {
             ads = [ "https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts" ];
             google = [ "https://raw.githubusercontent.com/nickspaargaren/no-google/master/pihole-google.txt" ];
             adult = [ "https://blocklistproject.github.io/Lists/porn.txt" ];

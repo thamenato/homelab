@@ -1,0 +1,34 @@
+blocking:
+  denylists:
+    ads:
+      - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+    google:
+      - https://raw.githubusercontent.com/nickspaargaren/no-google/master/pihole-google.txt
+    adult:
+      - https://blocklistproject.github.io/Lists/porn.txt
+  clientGroupsBlock:
+    default:
+      - ads
+      - google
+    kids-ipad:
+      - ads
+      - adult
+bootstrapDns:
+  ips:
+    - 1.1.1.1
+    - 1.0.0.1
+  upstream: https://one.one.one.one/dns-query
+customDNS:
+  customTTL: 1h
+  filterUnmappedTypes: true
+  mapping:
+    unraid-nixos.lan: 10.0.10.3
+    unraid.lan: 10.0.10.2
+  rewrite:
+    home: lan
+ports:
+  dns: 53
+upstreams:
+  groups:
+    default:
+      - https://one.one.one.one/dns-query
