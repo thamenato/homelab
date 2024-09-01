@@ -33,6 +33,7 @@
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = [ pkgs.deploy-rs ];
         packages = with pkgs; [
+          just
           nixpkgs-fmt
         ];
       };

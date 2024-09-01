@@ -29,17 +29,8 @@ in
         };
 
         # Define own domain names to IPs
-        customDNS = {
-          customTTL = "1h";
-          filterUnmappedTypes = true;
-          rewrite = {
-            home = "lan";
-          };
-          mapping = {
-            "unraid-nixos.lan" = "10.0.10.3";
-            "unraid.lan" = "10.0.10.2";
-          };
-        };
+        # using Unifi to define these
+        customDns = { };
 
         blocking = {
           denylists = {
