@@ -19,20 +19,6 @@
 
   environment.systemPackages = with pkgs; [ ];
 
-  fileSystems = {
-    # mount unraid user share to VM using 9p
-    "/mnt/data" = {
-      device = "data";
-      fsType = "9p";
-      options = [
-        "rw"
-        "relatime"
-        "access=client"
-        "trans=virtio"
-      ];
-    };
-  };
-
   # hardware = {
   #   opengl.enable = true;
 

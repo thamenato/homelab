@@ -29,8 +29,8 @@ in
         };
 
         # Define own domain names to IPs
-        # using Unifi to define these
-        customDns = { };
+        # customDns = { };
+        # Note: using Unifi to define these
 
         blocking = {
           denylists = {
