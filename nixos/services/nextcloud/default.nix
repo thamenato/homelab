@@ -20,16 +20,13 @@ in
 
         fileSystems = {
           # mount unraid user share to VM using 9p
-          "${homeDir}" = {
+          "/mnt/nextcloud" = {
             device = "nextcloud";
-            fsType = "9p";
+            fsType = "virtiofs";
             options = [
+              "nofail"
               "rw"
               "relatime"
-              "nofail"
-              "access=client"
-              "trans=virtio"
-              "x-systemd.automount"
             ];
           };
         };
@@ -38,9 +35,17 @@ in
           enable = true;
           package = pkgs.nextcloud29;
           hostName = "nextcloud.home";
-          # datadir = dataDir;
+          datadir = "/mnt/nextcloud";
           config.adminpassFile = "/etc/nextcloud-admin-pass";
+
+          extraApps = {
+            inherit (config.services.nextcloud.package.packages.apps) calendar tasks;
+          };
+          extraAppsEnable = true;
+          appstoreEnable = false;
         };
+
+        systemd.services.nextcloud-setup.after = [ "mnt-paperless.mount" ];
 
         networking.firewall = {
           allowedTCPPorts = [ 80 ];
