@@ -12,6 +12,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     deploy-rs.url = "github:serokell/deploy-rs";
+    pre-commit-hooks.url = "github:cachix/pre-commit-hooks.nix";
   };
 
   outputs =
@@ -40,8 +41,33 @@
       ];
     in
     {
+      checks =
+        {
+          pre-commit-check = inputs.pre-commit-hooks.lib.${system}.run {
+            src = ./.;
+            hooks = {
+              check-added-large-files.enable = true;
+              check-yaml.enable = true;
+              # deadnix.enable = true;
+              detect-private-keys.enable = true;
+              end-of-file-fixer.enable = true;
+              nixfmt-rfc-style.enable = true;
+              trim-trailing-whitespace.enable = true;
+            };
+          };
+        }
+        //
+        # from deploy-rs: this is highly advised, and will prevent many possible mistakes
+        builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
+
       devShells.${system}.default = pkgs.mkShell {
-        buildInputs = [ pkgs.deploy-rs ];
+        inherit (self.checks.pre-commit-check) shellHook;
+
+        buildInputs = [
+          self.checks.pre-commit-check.enabledPackages
+          pkgs.deploy-rs
+        ];
+
         packages = with pkgs; [
           age
           nil
@@ -84,8 +110,5 @@
           };
         }) nodes
       );
-
-      # This is highly advised, and will prevent many possible mistakes
-      checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
     };
 }
