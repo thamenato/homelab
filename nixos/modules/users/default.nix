@@ -1,4 +1,10 @@
-{ lib, config, meta, pkgs, ... }:
+{
+  lib,
+  config,
+  meta,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -25,4 +31,3 @@ in
     };
   };
 }
-

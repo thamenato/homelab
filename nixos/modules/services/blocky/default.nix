@@ -1,6 +1,7 @@
-{ lib
-, config
-, ...
+{
+  lib,
+  config,
+  ...
 }:
 
 with lib;
@@ -25,7 +26,10 @@ in
         # For initially solving DoH/DoT Requests when no system Resolver is available.
         bootstrapDns = {
           upstream = "https://one.one.one.one/dns-query";
-          ips = [ "1.1.1.1" "1.0.0.1" ];
+          ips = [
+            "1.1.1.1"
+            "1.0.0.1"
+          ];
         };
 
         # Define own domain names to IPs
@@ -39,8 +43,14 @@ in
             adult = [ "https://blocklistproject.github.io/Lists/porn.txt" ];
           };
           clientGroupsBlock = {
-            default = [ "ads" "google" ];
-            kids-ipad = [ "ads" "adult" ];
+            default = [
+              "ads"
+              "google"
+            ];
+            kids-ipad = [
+              "ads"
+              "adult"
+            ];
           };
         };
       };

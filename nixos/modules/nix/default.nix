@@ -1,8 +1,9 @@
-{ config
-, lib
-, pkgs
-, meta
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  meta,
+  ...
 }:
 
 with lib;
@@ -19,7 +20,10 @@ in
     nix = {
       package = pkgs.nixVersions.nix_2_23;
       settings = {
-        experimental-features = [ "nix-command" "flakes" ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
         allowed-users = [ meta.user ];
         trusted-users = [ meta.user ];
       };

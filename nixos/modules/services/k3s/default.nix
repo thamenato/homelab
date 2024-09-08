@@ -1,7 +1,8 @@
-{ lib
-, config
-, meta
-, ...
+{
+  lib,
+  config,
+  meta,
+  ...
 }:
 
 with lib;
@@ -23,12 +24,11 @@ in
       {
         enable = true;
         role = "server";
-        extraFlags = toString
-          ([
-            "--disable servicelb"
-            "--disable traefik"
-            "--disable local-storage"
-          ]);
+        extraFlags = toString ([
+          "--disable servicelb"
+          "--disable traefik"
+          "--disable local-storage"
+        ]);
         tokenFile = /var/lib/rancher/k3s/server/token;
         clusterInit = isInit;
         serverAddr = (if isInit then "" else "https://${initHostname}:6443");
