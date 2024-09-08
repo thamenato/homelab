@@ -6,11 +6,11 @@
 with lib;
 
 let
-  cfg = config.homelab.services.blocky;
+  cfg = config.homelab.modules.services.blocky;
 in
 {
   options = {
-    homelab.services.blocky.enable = mkEnableOption "Enable blocky";
+    homelab.modules.services.blocky.enable = mkEnableOption "Enable blocky";
   };
 
   config = mkIf cfg.enable {

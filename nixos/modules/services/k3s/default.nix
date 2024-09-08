@@ -7,11 +7,11 @@
 with lib;
 
 let
-  cfg = config.homelab.services.k3s;
+  cfg = config.homelab.modules.services.k3s;
 in
 {
   options = {
-    homelab.services.k3s.enable = mkEnableOption "Enable k3s";
+    homelab.modules.services.k3s.enable = mkEnableOption "Enable k3s";
   };
 
   config = mkIf cfg.enable {

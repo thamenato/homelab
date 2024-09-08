@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.homelab.services.blocky;
+  cfg = config.homelab.modules.boot;
 in
 {
   options = {

@@ -4,8 +4,10 @@
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
     # disko
-    disko.url = "github:nix-community/disko";
-    disko.inputs.nixpkgs.follows = "nixpkgs";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # For accessing `deploy-rs`'s utility Nix functions
     deploy-rs.url = "github:serokell/deploy-rs";
   };
@@ -51,7 +53,7 @@
                 };
 
                 modules = [
-                  disko.nixosModules.disko
+                  inputs.disko.nixosModules.disko
                 ] ++ host.modules;
               };
             })

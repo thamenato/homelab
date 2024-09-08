@@ -1,5 +1,7 @@
 { config
 , lib
+, pkgs
+, meta
 , ...
 }:
 
@@ -9,7 +11,7 @@ let
   cfg = config.homelab.modules.nix;
 in
 {
-  options.module = {
+  options = {
     homelab.modules.nix.enable = mkEnableOption "Nix configurations";
   };
 

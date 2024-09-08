@@ -3,11 +3,11 @@
 with lib;
 
 let
-  cfg = config.homelab.services.nextcloud;
+  cfg = config.homelab.modules.services.nextcloud;
 in
 {
   options = {
-    homelab.services.nextcloud.enable = mkEnableOption "Enable Nextcloud";
+    homelab.modules.services.nextcloud.enable = mkEnableOption "Enable Nextcloud";
   };
 
   config =

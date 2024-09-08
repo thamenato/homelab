@@ -3,11 +3,11 @@
 with lib;
 
 let
-  cfg = config.homelab.services.paperless;
+  cfg = config.homelab.modules.services.paperless;
 in
 {
   options = {
-    homelab.services.paperless.enable = mkEnableOption "Enable Paperless-ngx";
+    homelab.modules.services.paperless.enable = mkEnableOption "Enable Paperless-ngx";
   };
 
   config =

@@ -3,11 +3,11 @@
 with lib;
 
 let
-  cfg = config.homelab.services.openssh;
+  cfg = config.homelab.modules.services.openssh;
 in
 {
   options = {
-    homelab.services.openssh.enable = mkEnableOption "Enable OpenSSH";
+    homelab.modules.services.openssh.enable = mkEnableOption "Enable OpenSSH";
   };
 
   config = mkIf cfg.enable {
