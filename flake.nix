@@ -3,16 +3,24 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    # disko
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    # For accessing `deploy-rs`'s utility Nix functions
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     deploy-rs.url = "github:serokell/deploy-rs";
   };
 
-  outputs = { self, nixpkgs, disko, deploy-rs, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      deploy-rs,
+      ...
+    }@inputs:
     let
       system = "x86_64-linux";
       pkgs = import nixpkgs {
@@ -35,45 +43,47 @@
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = [ pkgs.deploy-rs ];
         packages = with pkgs; [
+          age
+          nil
           just
-          nixpkgs-fmt
+          nixfmt-rfc-style
         ];
       };
 
-      nixosConfigurations = builtins.listToAttrs
-        (map
-          (host:
-            {
-              name = host.hostname;
-              value = nixpkgs.lib.nixosSystem {
-                inherit system;
+      nixosConfigurations = builtins.listToAttrs (
+        map (host: {
+          name = host.hostname;
+          value = nixpkgs.lib.nixosSystem {
+            inherit system;
 
-                specialArgs = {
-                  meta = host;
-                };
+            specialArgs = {
+              meta = host;
+            };
 
-                modules = [
-                  inputs.disko.nixosModules.disko
-                ] ++ host.modules;
-              };
-            })
-          nodes);
+            modules = [
+              inputs.disko.nixosModules.disko
+              inputs.sops-nix.nixosModules.sops
+            ] ++ host.modules;
+          };
+        }) nodes
+      );
 
-      deploy.nodes = builtins.listToAttrs
-        (map
-          (host:
-            {
-              name = host.hostname;
-              value = {
-                hostname = host.ip;
-                sshOpts = [ "-i" "~/.ssh/rlyeh" ];
-                profiles.system = {
-                  user = "root";
-                  path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${host.hostname};
-                };
-              };
-            })
-          nodes);
+      deploy.nodes = builtins.listToAttrs (
+        map (host: {
+          name = host.hostname;
+          value = {
+            hostname = host.ip;
+            sshOpts = [
+              "-i"
+              "~/.ssh/rlyeh"
+            ];
+            profiles.system = {
+              user = "root";
+              path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.${host.hostname};
+            };
+          };
+        }) nodes
+      );
 
       # This is highly advised, and will prevent many possible mistakes
       checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) deploy-rs.lib;
