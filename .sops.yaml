@@ -1,0 +1,9 @@
+keys:
+  - &thamenato age15jkdns7a6m5j457ew0kr0lwznt5nje9fn76n7vy7c7u80k5ny5askks206
+  - &unraid_nixos_01 age1tecvd6c4a27upmsvkzvj8plfm72wrf7lg9phaq4sxd8dyt55730q6a35qx
+creation_rules:
+  - path_regex: secrets/unraid-nixos-01.yaml$
+    key_groups:
+      - age:
+          - *thamenato
+          - *unraid_nixos_01

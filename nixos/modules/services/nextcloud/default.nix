@@ -17,14 +17,12 @@ in
 
   config =
     let
-      homeDir = "/var/lib/nextcloud";
+      dataDir = "/mnt/nextcloud";
     in
     mkIf cfg.enable {
-      environment.etc."nextcloud-admin-pass".text = "justatest";
-
       fileSystems = {
         # mount unraid user share to VM using 9p
-        "/mnt/nextcloud" = {
+        "${dataDir}" = {
           device = "nextcloud";
           fsType = "virtiofs";
           options = [
@@ -39,8 +37,8 @@ in
         enable = true;
         package = pkgs.nextcloud29;
         hostName = "nextcloud.home";
-        datadir = "/mnt/nextcloud";
-        config.adminpassFile = "/etc/nextcloud-admin-pass";
+        datadir = "${dataDir}";
+        config.adminpassFile = config.sops.secrets.nextcloudAdminPasswd.path;
 
         extraApps = {
           inherit (config.services.nextcloud.package.packages.apps) calendar tasks;

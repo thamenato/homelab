@@ -70,9 +70,10 @@
 
         packages = with pkgs; [
           age
-          nil
           just
+          nil
           nixfmt-rfc-style
+          sops
         ];
       };
 

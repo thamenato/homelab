@@ -1,10 +1,4 @@
-{
-  inputs,
-  config,
-  pkgs,
-  meta,
-  ...
-}:
+{ pkgs, meta, ... }:
 
 {
   imports = [
@@ -12,6 +6,21 @@
     ./hardware-configuration.nix
     ./disko-config.nix
   ];
+
+  sops = {
+    defaultSopsFile = ../../../secrets/unraid-nixos-01.yaml;
+    defaultSopsFormat = "yaml";
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+
+    secrets = {
+      nextcloudAdminPasswd = {
+        owner = "nextcloud";
+      };
+      paperlessAdminPasswd = {
+        owner = "paperless";
+      };
+    };
+  };
 
   networking.hostName = meta.hostname;
   networking.networkmanager.enable = true;

@@ -1,9 +1,4 @@
-{
-  lib,
-  config,
-  pkgs,
-  ...
-}:
+{ lib, config, ... }:
 
 with lib;
 
@@ -33,10 +28,9 @@ in
         };
       };
 
-      environment.etc."paperless-admin-pass".text = "admin";
       services.paperless = {
         enable = true;
-        passwordFile = "/etc/paperless-admin-pass";
+        passwordFile = config.sops.secrets.paperlessAdminPasswd.path;
         dataDir = dataDir;
         address = "10.0.10.3";
         # settings = {
