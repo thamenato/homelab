@@ -19,6 +19,12 @@
       paperlessAdminPasswd = {
         owner = "paperless";
       };
+      cthyllaxyCert = {
+        owner = "nginx";
+      };
+      cthyllaxyPrivKey = {
+        owner = "nginx";
+      };
     };
   };
 
