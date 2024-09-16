@@ -16,9 +16,6 @@
       nextcloudAdminPasswd = {
         owner = "nextcloud";
       };
-      paperlessAdminPasswd = {
-        owner = "paperless";
-      };
       cthyllaxyCert = {
         owner = "nginx";
       };
