@@ -25,9 +25,9 @@
 
     services = {
       blocky.enable = true;
-      nextcloud.enable = false;
       nginx.enable = true;
       openssh.enable = true;
+      owncloud.enable = true;
       paperless.enable = true;
       postgres.enable = true;
     };
