@@ -11,27 +11,20 @@ let
   cfg = config.homelab.modules.services.nextcloud;
 in
 {
-  options = {
-    homelab.modules.services.nextcloud.enable = mkEnableOption "Enable Nextcloud";
+  options.homelab.modules.services.nextcloud = {
+    enable = mkEnableOption "Enable Nextcloud";
   };
 
   config =
     let
-      dataDir = "/mnt/nextcloud";
+      homeDir = "/mnt/data/nextcloud";
+      # dataDir = "${homeDir}/data";
       hostName = "nextcloud.cthyllaxy.xyz";
     in
     mkIf cfg.enable {
-      fileSystems = {
-        # mount unraid user share to VM using 9p
-        "${dataDir}" = {
-          device = "nextcloud";
-          fsType = "virtiofs";
-          options = [
-            "nofail"
-            "rw"
-            "relatime"
-          ];
-        };
+
+      sops.secrets.nextcloudAdminPasswd = {
+        owner = "nextcloud";
       };
 
       services.nextcloud = {
@@ -40,31 +33,62 @@ in
         package = pkgs.nextcloud29;
 
         hostName = hostName;
+
         https = true;
         settings = {
           overwriteprotocol = "https";
         };
-
         maxUploadSize = "16G";
-        datadir = "${dataDir}";
+
+        # Let NixOS install and configure the database automatically.
+        database.createLocally = true;
+
+        # Let NixOS install and configure Redis caching automatically.
+        configureRedis = true;
+
+        # home = "${homeDir}";
+        # datadir = "${homeDir}";
 
         config = {
+          adminuser = "admin";
           adminpassFile = config.sops.secrets.nextcloudAdminPasswd.path;
+          dbtype = "pgsql";
+          dbhost = "/run/postgresql";
+          defaultPhoneRegion = "US";
         };
 
-        extraApps = {
-          inherit (config.services.nextcloud.package.packages.apps) calendar tasks;
-        };
         extraAppsEnable = true;
-        appstoreEnable = false;
+        extraApps = {
+          # List of packaged nextcloud apps
+          # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
+
+          inherit (config.services.nextcloud.package.packages.apps)
+            calendar
+            cookbook
+            deck
+            memories
+            notes
+            tasks
+            ;
+        };
       };
 
-      systemd.services.nextcloud-setup.after = [ "mnt-paperless.mount" ];
+      systemd.services.nextcloud-setup.after = [ "mnt-data.mount" ];
 
       services.nginx.virtualHosts.${hostName} = {
         forceSSL = true;
-        sslCertificate = config.sops.secrets.cthyllaxyCert.path;
-        sslCertificateKey = config.sops.secrets.cthyllaxyPrivKey.path;
+        sslCertificate = config.sops.secrets.sslCertificate.path;
+        sslCertificateKey = config.sops.secrets.sslCertificateKey.path;
+      };
+
+      services.postgresql = {
+        ensureDatabases = [ "nextcloud" ];
+        ensureUsers = [
+          {
+            name = "nextcloud";
+            ensureDBOwnership = true;
+          }
+        ];
       };
 
       networking.firewall = {

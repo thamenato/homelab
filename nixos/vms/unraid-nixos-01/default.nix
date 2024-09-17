@@ -11,18 +11,6 @@
     defaultSopsFile = ../../../secrets/unraid-nixos-01.yaml;
     defaultSopsFormat = "yaml";
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
-
-    secrets = {
-      nextcloudAdminPasswd = {
-        owner = "nextcloud";
-      };
-      cthyllaxyCert = {
-        owner = "nginx";
-      };
-      cthyllaxyPrivKey = {
-        owner = "nginx";
-      };
-    };
   };
 
   networking.hostName = meta.hostname;
@@ -37,9 +25,23 @@
 
     services = {
       blocky.enable = true;
-      nextcloud.enable = true;
+      nextcloud.enable = false;
+      nginx.enable = true;
       openssh.enable = true;
       paperless.enable = true;
+      postgres.enable = true;
+    };
+  };
+
+  fileSystems = {
+    "/mnt/data" = {
+      device = "data";
+      fsType = "virtiofs";
+      options = [
+        "nofail"
+        "rw"
+        "relatime"
+      ];
     };
   };
 

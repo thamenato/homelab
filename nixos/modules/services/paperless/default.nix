@@ -1,9 +1,4 @@
-{
-  pkgs,
-  lib,
-  config,
-  ...
-}:
+{ lib, config, ... }:
 
 with lib;
 
@@ -11,29 +6,31 @@ let
   cfg = config.homelab.modules.services.paperless;
 in
 {
-  options = {
-    homelab.modules.services.paperless.enable = mkEnableOption "Enable Paperless-ngx";
+  options.homelab.modules.services.paperless = {
+    enable = mkEnableOption "Enable Paperless-ngx";
+    dataDir = mkOption {
+      type = types.str;
+      default = "${config.homelab.modules.services.dataDir}/paperless";
+      description = "Path to store PostgreSQL data";
+    };
+    systemdMnt = mkOption {
+      type = types.str;
+      default = "mnt-data.mount";
+      description = "Systemd mount unit for the dataDir";
+    };
+    hostName = mkOption {
+      type = types.str;
+      default = "paperless.cthyllaxy.xyz";
+      description = "Hostname to use with Paperless";
+    };
   };
 
   config =
     let
-      dataDir = "/mnt/paperless";
-      hostName = "paperless.cthyllaxy.xyz";
+      dataDir = cfg.dataDir;
+      hostName = cfg.hostName;
     in
     mkIf cfg.enable {
-      fileSystems = {
-        # mount unraid user share to VM using 9p
-        "${dataDir}" = {
-          device = "paperless";
-          fsType = "virtiofs";
-          options = [
-            "nofail"
-            "rw"
-            "relatime"
-          ];
-        };
-      };
-
       sops.secrets.paperlessAdminPasswd = {
         owner = "paperless";
       };
@@ -51,14 +48,21 @@ in
       };
 
       systemd.services = {
-        paperless-scheduler.after = [ "mnt-paperless.mount" ];
-        paperless-consumer.after = [ "mnt-paperless.mount" ];
-        paperless-web.after = [ "mnt-paperless.mount" ];
+        paperless-scheduler.after = [
+          cfg.systemdMnt
+          "postgresql.service"
+        ];
+        paperless-consumer.after = [
+          cfg.systemdMnt
+          "postgresql.service"
+        ];
+        paperless-web.after = [
+          cfg.systemdMnt
+          "postgresql.service"
+        ];
       };
 
       services.postgresql = {
-        enable = true;
-        package = pkgs.postgresql_16;
         ensureDatabases = [ "paperless" ];
         ensureUsers = [
           {
@@ -70,8 +74,8 @@ in
 
       services.nginx.virtualHosts.${hostName} = {
         forceSSL = true;
-        sslCertificate = config.sops.secrets.cthyllaxyCert.path;
-        sslCertificateKey = config.sops.secrets.cthyllaxyPrivKey.path;
+        sslCertificate = config.sops.secrets.sslCertificate.path;
+        sslCertificateKey = config.sops.secrets.sslCertificateKey.path;
 
         locations."/" = {
           proxyPass = "http://localhost:28981";
