@@ -1,0 +1,8 @@
+http://immich.cthyllaxy.xyz {
+    redir https://{host}{uri}
+}
+
+https://immich.cthyllaxy.xyz {
+    tls /ssl/certs/domain.cert.pem /ssl/certs/private.key.pem
+    reverse_proxy http://immich_server:3001
+}

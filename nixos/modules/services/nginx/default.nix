@@ -22,10 +22,13 @@ in
   config = lib.mkIf cfg.enable {
 
     sops.secrets = lib.mkIf cfg.ssl {
-      sslCertificate = {
+      originCertificate = {
         owner = "nginx";
       };
-      sslCertificateKey = {
+      privateKey = {
+        owner = "nginx";
+      };
+      originCA = {
         owner = "nginx";
       };
     };

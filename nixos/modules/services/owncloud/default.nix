@@ -43,14 +43,12 @@ in
         stateDir = cfg.dataDir;
         configDir = "${cfg.dataDir}/config";
         environment = {
-          OCIS_LOG_LEVEL = "error";
+          OCIS_LOG_LEVEL = "info";
           PROXY_TLS = "false";
           OCIS_INSECURE = "false";
-          # TLS_INSECURE = "true";
-          # TLS_SKIP_VERIFY_CLIENT_CERT = "true";
-          # WEBDAV_ALLOW_INSECURE = "true";
+          PROXY_HTTP_ADDR = "0.0.0.0:9200";
         };
-        environmentFile = config.sops.secrets.ocisEnvironmentFile.path;
+        # environmentFile = config.sops.secrets.ocisEnvironmentFile.path;
       };
 
       services.nginx.virtualHosts.${cfg.hostName} =
@@ -73,7 +71,12 @@ in
               # Disable checking of client request body size
               client_max_body_size 0;
 
+              proxy_http_version 1.1;
+              proxy_pass_header Content-Type;
+              proxy_redirect off;
+
               proxy_set_header Host $host;
+              proxy_set_header Origin https://ocis.cthyllaxy.xyz;
             '';
           };
         };

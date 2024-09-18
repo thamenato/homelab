@@ -7,3 +7,8 @@ creation_rules:
       - age:
           - *thamenato
           - *unraid_nixos_01
+
+  - path_regex: unraid/(.*/)?secrets.env$
+    key_groups:
+      - age:
+          - *thamenato

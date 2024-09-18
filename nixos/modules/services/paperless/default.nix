@@ -74,8 +74,9 @@ in
 
       services.nginx.virtualHosts.${hostName} = {
         forceSSL = true;
-        sslCertificate = config.sops.secrets.sslCertificate.path;
-        sslCertificateKey = config.sops.secrets.sslCertificateKey.path;
+        sslCertificate = config.sops.secrets.originCertificate.path;
+        sslCertificateKey = config.sops.secrets.privateKey.path;
+        sslTrustedCertificate = config.sops.secrets.originCA.path;
 
         locations."/" = {
           proxyPass = "http://localhost:28981";
