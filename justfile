@@ -13,6 +13,6 @@ update FLAKE USER IP:
         --target-host {{ USER }}@{{ IP }} \
         --build-host {{ USER }}@{{ IP }}
 
-# Update host remotely using deploy-rs
-deploy FLAKE:
-    @deploy .#{{ FLAKE }}
+# Update host remotely using colmena
+deploy *args='--help':
+    @-colmena "{{args}}"
