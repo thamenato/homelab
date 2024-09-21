@@ -54,40 +54,83 @@
         ];
       };
 
-      colmena = {
-        meta = {
-          nixpkgs = import nixpkgs { inherit system; };
-
-          nodeSpecialArgs = {
-            unraid-nixos-01 = {
-              meta = {
-                hostname = "unraid-nixos-01";
-                user = "thamenato";
-              };
+      nixosConfigurations =
+        let
+          mkMeta =
+            {
+              user ? "thamenato",
+              hostname,
+            }:
+            {
+              user = user;
+              hostname = hostname;
             };
-          };
-        };
 
-        defaults = {
-          imports = [
+          modulesDefaults = [
             inputs.disko.nixosModules.disko
             inputs.sops-nix.nixosModules.sops
           ];
-          deployment.buildOnTarget = true;
-        };
 
-        unraid-nixos-01 = {
-          imports = [ ./nixos/vms/unraid-nixos-01 ];
+        in
+        {
+          bastion-proxy = nixpkgs.lib.nixosSystem {
+            specialArgs = {
+              meta = mkMeta { hostname = "bastion-proxy"; };
+            };
 
-          deployment = {
-            targetHost = "10.0.10.3";
-            targetUser = "thamenato";
-            tags = [
-              "unraid"
-              "vm"
-            ];
+            modules = [ ./nixos/vms/hosts/bastion-proxy ] ++ modulesDefaults;
+          };
+
+          unraid-nixos-01 = nixpkgs.lib.nixosSystem {
+            specialArgs = {
+              meta = mkMeta { hostname = "unraid-nixos-01"; };
+            };
+
+            modules = [ ./nixos/vms/hosts/unraid-nixos-01 ] ++ modulesDefaults;
           };
         };
-      };
+
+      colmena =
+        let
+          conf = self.nixosConfigurations;
+        in
+        {
+          meta = {
+            nixpkgs = import nixpkgs { inherit system; };
+            nodeSpecialArgs = builtins.mapAttrs (name: value: value._module.specialArgs) conf;
+          };
+
+          defaults = {
+            imports = [
+              inputs.disko.nixosModules.disko
+              inputs.sops-nix.nixosModules.sops
+            ];
+            deployment = {
+              buildOnTarget = true;
+              targetUser = "thamenato";
+            };
+          };
+
+          bastion-proxy = {
+            imports = [ ./nixos/vms/hosts/bastion-proxy ];
+            deployment = {
+              targetHost = "10.0.10.214";
+              tags = [
+                "vm"
+                "bastion"
+              ];
+            };
+          };
+
+          unraid-nixos-01 = {
+            imports = [ ./nixos/vms/hosts/unraid-nixos-01 ];
+
+            deployment = {
+              targetHost = "10.0.10.3";
+              targetUser = "thamenato";
+              tags = [ "vm" ];
+            };
+          };
+        };
     };
 }
