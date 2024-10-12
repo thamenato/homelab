@@ -1,12 +1,15 @@
 {
-  imports = [ ../../defaults ];
+  imports = [
+    ../../defaults
+    ./services
+  ];
 
   sops = {
     defaultSopsFile = ./secrets.yaml;
     defaultSopsFormat = "yaml";
   };
 
-  # homelab.services =
-  #   {
-  #   };
+  modules.services = {
+    caddy.enable = true;
+  };
 }

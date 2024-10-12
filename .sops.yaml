@@ -12,3 +12,8 @@ creation_rules:
       - age:
           - *thamenato
           - *unraid_nixos_01
+
+  - path_regex: nixos/vms/hosts/bastion-proxy/secrets.yaml
+    key_groups:
+      - age:
+          - *thamenato

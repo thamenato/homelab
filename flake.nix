@@ -114,7 +114,7 @@
           bastion-proxy = {
             imports = [ ./nixos/vms/hosts/bastion-proxy ];
             deployment = {
-              targetHost = "10.0.10.214";
+              targetHost = "10.0.10.5";
               tags = [
                 "vm"
                 "bastion"
@@ -128,7 +128,10 @@
             deployment = {
               targetHost = "10.0.10.3";
               targetUser = "thamenato";
-              tags = [ "vm" ];
+              tags = [
+                "vm"
+                "apps"
+              ];
             };
           };
         };

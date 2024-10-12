@@ -39,6 +39,7 @@ in
         enable = true;
         passwordFile = config.sops.secrets.paperlessAdminPasswd.path;
         dataDir = dataDir;
+        address = "10.0.10.3";
         settings = {
           PAPERLESS_URL = "https://${hostName}";
           USE_X_FORWARD_HOST = true;
@@ -72,37 +73,8 @@ in
         ];
       };
 
-      services.nginx.virtualHosts.${hostName} = {
-        forceSSL = true;
-        sslCertificate = config.sops.secrets.originCertificate.path;
-        sslCertificateKey = config.sops.secrets.privateKey.path;
-        sslTrustedCertificate = config.sops.secrets.originCA.path;
-
-        locations."/" = {
-          proxyPass = "http://localhost:28981";
-          extraConfig = ''
-            # These configuration options are required for WebSockets to work.
-            proxy_http_version 1.1;
-            proxy_set_header Upgrade $http_upgrade;
-            proxy_set_header Connection "upgrade";
-
-            proxy_redirect off;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Host $server_name;
-            add_header Referrer-Policy "strict-origin-when-cross-origin";
-
-            client_max_body_size 100M;
-          '';
-        };
-      };
-
       networking.firewall = {
-        allowedTCPPorts = [
-          80
-          443
-        ];
+        allowedTCPPorts = [ config.services.paperless.port ];
       };
     };
 }
